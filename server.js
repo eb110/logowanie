@@ -1,22 +1,15 @@
 const express = require('express')
 const app = express()
 
+require('./models/mongoose')
+
+const indexRouter = require('./routes/index')
+
+app.use(express.urlencoded({ extended: false}))
 app.set('view-engine', 'ejs')
+app.set('views', __dirname + '/views')
+app.use(express.static('public'))
 
-app.get('/', (req, res) => {
-    res.render('index.ejs', {ja: 'eb110'})
-})
-
-app.get('/login', (req, res) => {
-    res.render('login.ejs')
-})
-
-app.get('/register', (req, res) => {
-    res.render('register.ejs')
-})
-
-app.post('/register', (req, res) => {
-    
-})
+app.use('/', indexRouter)
 
 app.listen(3000)

@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 const passport = require('passport')
 
 const initializePassport = require('../passport.config')
-initializePassport(passport)
+//initializePassport(passport)
 
 require('../models/mongoose')
 const User = require('../models/user')

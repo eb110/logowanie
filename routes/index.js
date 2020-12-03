@@ -2,24 +2,43 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const passport = require('passport')
+const session = require('express-session')
 
+router.use(session({
+    //secret is a key which i encrypt all the information for us
+    secret: 'dupa',
+    resave: false,
+    saveUninitialized: false
+}))
 
 require('../models/mongoose')
 const User = require('../models/user')
 
-const initializePassport = require('../passport.config')
+//hook up passport configuration
+const initializePassport = require('../passport-config')
+//initialization
 initializePassport(
     passport, 
        //this is getUserByEmail function in passport-config.js file
     async email => {
-        console.log('email serwer: ' + email)
         const listUsers = await User.find({})
         const check = listUsers.find(x => x.email === email)
         return check
+    },
+    //same stuff but for getUserById
+    async id => {
+        const listUsers = await User.find({})
+        const check = listUsers.find(x => x.id === id)
+        return check
     }
+    //atm we have initialized our passport by user typed authentication
 )
+
+router.use(passport.initialize())
+router.use(passport.session())
+
 router.get('/', (req, res) => {
-    res.render('index.ejs', {ja: 'eb110'})
+    res.render('index.ejs', {ja: req.newUser.name})
 })
 
 router.get('/login', (req, res) => {

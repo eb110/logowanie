@@ -3,6 +3,7 @@ const router = express.Router()
 const bcrypt = require('bcrypt')
 const passport = require('passport')
 const session = require('express-session')
+const methodOverride = require('method-override')
 
 router.use(session({
     //secret is a key which i encrypt all the information for us
@@ -36,12 +37,17 @@ initializePassport(
 
 router.use(passport.initialize())
 router.use(passport.session())
+router.use(methodOverride('_method'))
 
-router.get('/', (req, res) => {
-    res.render('index.ejs', {ja: req.newUser.name})
+router.get('/', checkAuthenticated, async (req, res) => {
+    const nazwa = await req.user
+    res.render('index.ejs', {
+        nameIndex: nazwa.userName,
+        statusIndex: nazwa.status
+    })
 })
 
-router.get('/login', (req, res) => {
+router.get('/login', checkNotAuthenticated, (req, res) => {
     res.render('login.ejs')
 })
 
@@ -55,13 +61,14 @@ router.post('/login', passport.authenticate('local', {
     failureFlash: true
 }))
 
-router.post('/register', async (req, res) => {
+router.post('/register', checkNotAuthenticated, async (req, res) => {
     try{
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
         const newUser = new User({
             userName: req.body.name,
             email: req.body.email,
-            password: hashedPassword
+            password: hashedPassword,
+            status: req.body.status
         })
         await newUser.save()
         res.redirect('/login')
@@ -71,8 +78,35 @@ router.post('/register', async (req, res) => {
     }
 })
 
-router.get('/register', (req, res) => {
+router.get('/register', checkNotAuthenticated, (req, res) => {
     res.render('register.ejs')
 })
+
+router.delete('/logout', (req, res) => {
+    req.logOut()
+    res.redirect('/login')
+})
+
+
+//this will avoid the ability to visit pages without authentication
+function checkAuthenticated(req, res, next){
+    //because of passport we can use isAuthenticated function
+    //this function has to be applied to the routing page
+    if(req.isAuthenticated()) {
+        //if user logged then go next
+        return next()
+    }
+    //if not redirect
+    res.redirect('/login')
+    }
+    
+    //function to avoid double login
+    function checkNotAuthenticated(req, res, next){
+        if(req.isAuthenticated()){
+            return res.redirect('/')
+        }
+        //next just stays your browsing as it is
+        next()
+    }
 
 module.exports = router

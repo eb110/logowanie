@@ -6,9 +6,10 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Siemka <%= ja %> </h1>
-    <a href="/register">Register</a>
-    <br>
-    <a href="/login">Login</a>
+    <h1>Hello <%= nameIndex %> </h1>
+    <h2>Status: <%= statusIndex %></h2>
+    <form action="/logout?_method=DELETE" method="POST">
+        <button type="submit">Log Out</button>
+    </form>
 </body>
 </html>

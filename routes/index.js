@@ -5,6 +5,8 @@ const passport = require('passport')
 const session = require('express-session')
 const methodOverride = require('method-override')
 
+let listUsers = []
+
 router.use(session({
     //secret is a key which i encrypt all the information for us
     secret: 'dupa',
@@ -17,18 +19,19 @@ const User = require('../models/user')
 
 //hook up passport configuration
 const initializePassport = require('../passport-config')
+const initializeRegistration = require('../register-config')
 //initialization
 initializePassport(
     passport, 
        //this is getUserByEmail function in passport-config.js file
     async email => {
-        const listUsers = await User.find({})
+        listUsers = await User.find({})
         const check = listUsers.find(x => x.email === email)
         return check
     },
     //same stuff but for getUserById
     async id => {
-        const listUsers = await User.find({})
+        listUsers = await User.find({})
         const check = listUsers.find(x => x.id === id)
         return check
     }
@@ -51,6 +54,11 @@ router.get('/login', checkNotAuthenticated, (req, res) => {
     res.render('login.ejs')
 })
 
+router.get('/new', checkAuthenticated, (req, res) => {
+    console.log(listUsers)
+    res.render('new.ejs')
+})
+
 //checkNotAuthenticated,
 //we are going to use passport middleware
 router.post('/login', passport.authenticate('local', {
@@ -62,6 +70,7 @@ router.post('/login', passport.authenticate('local', {
 }))
 
 router.post('/register', checkNotAuthenticated, async (req, res) => {
+    listUsers = await User.find({})
     try{
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
         const newUser = new User({
@@ -70,8 +79,15 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
             password: hashedPassword,
             status: req.body.status
         })
+        let initObject = initializeRegistration(listUsers, await newUser)
+        if(initObject.status){
         await newUser.save()
         res.redirect('/login')
+        }
+        else {
+            req.flash('error', initObject.message)
+            res.redirect('/register')
+        }
     } catch {
         console.log('this is error')
         res.redirect('/register')

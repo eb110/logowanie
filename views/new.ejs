@@ -6,6 +6,50 @@
     <title>New Ticket</title>
 </head>
 <body>
+    <h1>New Ticket</h1>
+    <div id="TicketNumber" name="TicketNumber">Ticket Number: <%= TNr %></div>
+    <div id="TicketTimestamp" name="TicketTimestamp">Ticket Timestamp: <%= TDate %></div>
+    <div id="TicketAuthor" name="TicketAuthor">Ticket Author: <%= Author %></div>
+    <div id="TicketStatus" name="TicketStatus">Ticket Status: Open</div>
+    <form action="/new" method="POST">
+        <div>
+            <label for="Type">Type:</label>
+            <select name="Type" id="Type" required>
+                      <option>Development</option>      
+                      <option>Testing</option>   
+                      <option>Production</option>                 
+            </select>
+        </div>
+        <div>
+            <label for="Ticket Date">Ticket Date:</label>
+            <input type="date" id="TicketDate" name="TicketDate" required>
+        </div>
+        <div>
+            <label for="Assignment">Assign to:</label>
+            <select name="Assignment" id="Assignment" required>
+                <% for(let i=0; i < TUsers.length; i++) { %>
+                      <option><%= TUsers[i].userName %></option>                    
+                 <% } %>
+            </select>
+        </div>
+        <div>
+            <label for="Priority">Priority:</label>
+            <select name="Priority" id="Priority" required>
+                      <option>Low</option>      
+                      <option>Medium</option>   
+                      <option>High</option>                 
+            </select>
+        </div>
+        <div>
+            <label for="Description">Description:</label>
+            <textarea id="Description" name="Description" required>Description: </textarea>
+        </div>
+        <div>
+            <label for="ErrorMSG">Error Message:</label>
+            <textarea id="ErrorMSG" name="ErrorMSG" required>Error Message: </textarea>
+        </div>
+            <button type="submit">Create</button>
+    </form>
     <a href="/">Home</a>
     <form action="/logout?_method=DELETE" method="POST">
         <button type="submit">Log Out</button>

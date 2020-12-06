@@ -6,6 +6,7 @@ const session = require('express-session')
 const methodOverride = require('method-override')
 
 let listUsers = []
+let TicketNumber = 0
 
 router.use(session({
     //secret is a key which i encrypt all the information for us
@@ -16,6 +17,8 @@ router.use(session({
 
 require('../models/mongoose')
 const User = require('../models/user')
+const TicketNr = require('../models/ticketNr')
+const Ticket = require('../models/ticket')
 
 //hook up passport configuration
 const initializePassport = require('../passport-config')
@@ -54,9 +57,48 @@ router.get('/login', checkNotAuthenticated, (req, res) => {
     res.render('login.ejs')
 })
 
-router.get('/new', checkAuthenticated, (req, res) => {
-    console.log(listUsers)
-    res.render('new.ejs')
+router.get('/new', checkAuthenticated, async (req, res) => {
+    const nazwa = await req.user
+    let data = new Date()
+    TicketNumber = await TicketNr.find({})
+    TicketNumber = TicketNumber[0].BugTicketNumber + 1
+    res.render('new.ejs', {
+        TNr: TicketNumber,
+        TDate: data,
+        TUsers: listUsers,
+        Author: nazwa.userName
+    })
+})
+
+router.post('/new', checkAuthenticated, async(req, res) => {
+    const nazwa = await req.user
+    try{
+        const newTicket = new Ticket({
+           ticketNumber: TicketNumber,
+           ticketTimestamp: new Date(),
+           ticketAuthor: nazwa.userName,
+           ticketStatus: 'Open',
+           ticketType: req.body.Type,
+           ticketDate: req.body.TicketDate,
+           ticketAssignment: req.body.Assignment,
+           ticketPriority: req.body.Priority,
+           ticketDescription: req.body.Description,
+           ticketError: req.body.ErrorMSG
+        })
+        await newTicket.save()      
+        await TicketNr.updateOne({
+            BugTicketNumber: TicketNumber - 1
+        },{
+            $set: {
+                BugTicketNumber: TicketNumber
+            }
+        }
+        )        
+        res.redirect('/')        
+    } catch {
+        console.log('this is error')
+        res.redirect('/new')
+    }
 })
 
 //checkNotAuthenticated,

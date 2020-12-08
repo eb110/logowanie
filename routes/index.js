@@ -7,6 +7,7 @@ const methodOverride = require('method-override')
 
 let listUsers = []
 let TicketNumber = 0
+let listTickets = []
 
 router.use(session({
     //secret is a key which i encrypt all the information for us
@@ -53,7 +54,23 @@ router.get('/', checkAuthenticated, async (req, res) => {
     })
 })
 
-router.get('/login', checkNotAuthenticated, (req, res) => {
+router.get('/open', checkAuthenticated, async(req, res) => {
+    res.render('open.ejs')
+})
+
+router.get('/load', checkAuthenticated, async (req, res) => {
+    res.render('load.ejs', {
+        Tcts: listTickets
+    })
+})
+router.post('/load', checkAuthenticated, async (req, res) => {
+    let check = req.body.TicketNumber
+    console.log(check)
+    res.render('open.ejs')
+})
+
+router.get('/login', checkNotAuthenticated, async (req, res) => {
+    listTickets = await Ticket.find({})
     res.render('login.ejs')
 })
 

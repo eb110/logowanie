@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <div>Tickets</div>
+        <table style="width:100%">
+            <tr>
+                <th>Number</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Type</th>
+                <th>Load</th>
+            </tr>
+            <% for(let i=0; i < Tcts.length; i++) { %>
+                <tr>
+                    <form action="/load" method="POST">
+                <th><input id="TicketNumber" name="TicketNumber" value=<%= Tcts[i].ticketNumber %> ></th> 
+                <th><%= Tcts[i].ticketStatus %></th> 
+                <th><%= Tcts[i].ticketPriority %></th> 
+                <th><%= Tcts[i].ticketType %></th> 
+                <th><button type="submit">Open</button></th>
+                    </form>
+                </tr>                   
+           <% } %>
+          </table>
+    </div>
+</body>
+</html>

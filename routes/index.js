@@ -21,6 +21,7 @@ require('../models/mongoose')
 const User = require('../models/user')
 const TicketNr = require('../models/ticketNr')
 const Ticket = require('../models/ticket')
+const Comment = require('../models/comments')
 
 //hook up passport configuration
 const initializePassport = require('../passport-config')
@@ -56,7 +57,41 @@ router.get('/', checkAuthenticated, async (req, res) => {
 })
 
 router.get('/comments', checkAuthenticated, async (req, res) => {
-    res.render('comments.ejs', {Tcts: listTickets[indeks]})
+    const nazwa = await req.user
+    let data = new Date()
+    try{
+    res.render('comments.ejs', {
+        Tcts: listTickets[indeks],
+        TDate: data,
+        Author: nazwa.userName
+    })
+    }catch{
+        console.log('cos kurwa nie gra')
+    }
+})
+
+router.post('/comments', checkAuthenticated, async (req, res) => {
+    const nazwa = await req.user
+    const newComment = await new Comment({
+        commentTimestamp: new Date(),
+        commentAuthor: nazwa.userName,
+        commentComment: req.body.Comment
+    })
+    console.log(newComment)
+    listTickets[indeks].comments.push(newComment)
+    await Ticket.updateOne({
+        ticketNumber: indeks + 1
+    }, {
+        $set: {
+            comments: listTickets[indeks].comments
+        }
+    }
+    )
+    res.render('comments.ejs', {
+        Tcts: listTickets[indeks],
+        TDate: new Date(),
+        Author: nazwa.userName
+    })
 })
 
 router.get('/open', checkAuthenticated, async(req, res) => {
@@ -67,8 +102,6 @@ router.get('/open', checkAuthenticated, async(req, res) => {
 
 router.post('/open', checkAuthenticated, async (req, res) => {
     const check = await req.body.Status
-    console.log(check)
-    console.log(indeks)
     try {
         await Ticket.updateOne({
             ticketNumber: indeks + 1
@@ -98,6 +131,7 @@ router.get('/login', checkNotAuthenticated, async (req, res) => {
 })
 
 router.get('/new', checkAuthenticated, async (req, res) => {
+    listTickets = await Ticket.find({})
     const nazwa = await req.user
     let data = new Date()
     TicketNumber = await TicketNr.find({})
@@ -123,9 +157,11 @@ router.post('/new', checkAuthenticated, async(req, res) => {
            ticketAssignment: req.body.Assignment,
            ticketPriority: req.body.Priority,
            ticketDescription: req.body.Description,
-           ticketError: req.body.ErrorMSG
+           ticketError: req.body.ErrorMSG,
+           ticketComments: []
         })
-        await newTicket.save()      
+        await newTicket.save()  
+        listTickets = await Ticket.find({})    
         await TicketNr.updateOne({
             BugTicketNumber: TicketNumber - 1
         },{

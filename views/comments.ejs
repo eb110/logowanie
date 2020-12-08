@@ -6,6 +6,28 @@
     <title>Comments</title>
 </head>
 <body>
+    <div>
+        <div>
+            Comments:
+        </div>
+        <div>      
+            <% for(let i=0; i < Tcts.comments.length; i++) { %>
+                <div><%= Tcts.comments[i].commentAuthor %> </div>                  
+           <% } %>
+        </div>
+        <div>
+            <div id="CommentTimestamp" name="CommentTimestamp">Comment Timestamp: <%= TDate %></div>
+            <div id="CommentAuthor" name="CommentAuthor">Comment Author: <%= Author %></div>
+            <form action="/comments" method="POST">
+                <div>
+                    <label for="Comment">Comment: </label>
+                    <textarea id="Comment" name="Comment"></textarea>
+                    <br>
+                    <button type="submit">Add Comment</button>
+                </div>        
+            </form>
+        </div>
+    </div>
     <div><a href="/">Home</a></div>
     <div><a href="/load">Tickets</a></div>
     <form action="/logout?_method=DELETE" method="POST">

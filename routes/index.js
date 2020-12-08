@@ -55,17 +55,15 @@ router.get('/', checkAuthenticated, async (req, res) => {
 })
 
 router.get('/open', checkAuthenticated, async(req, res) => {
+    let check = req.query
+    console.log(check)
     res.render('open.ejs')
 })
 
 router.get('/load', checkAuthenticated, async (req, res) => {
-    res.render('load.ejs', {
-        Tcts: listTickets
-    })
+    res.render('load.ejs', {Tcts: listTickets})
 })
 router.post('/load', checkAuthenticated, async (req, res) => {
-    let check = req.body.TicketNumber
-    console.log(check)
     res.render('open.ejs')
 })
 

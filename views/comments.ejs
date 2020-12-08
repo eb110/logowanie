@@ -11,11 +11,15 @@
             Comments:
         </div>
         <div>      
-            <% for(let i=0; i < Tcts.comments.length; i++) { %>
-                <div><%= Tcts.comments[i].commentAuthor %> </div>                  
+            <% for(let i=0; i < Tcts.length; i++) { %>
+                <div><%= Tcts[i].commentTimestamp %> </div>     
+                <div><%= Tcts[i].commentAuthor %> </div>  
+                <div><%= Tcts[i].commentComment %> </div>               
            <% } %>
+           
         </div>
         <div>
+            <div>New Comment</div>
             <div id="CommentTimestamp" name="CommentTimestamp">Comment Timestamp: <%= TDate %></div>
             <div id="CommentAuthor" name="CommentAuthor">Comment Author: <%= Author %></div>
             <form action="/comments" method="POST">

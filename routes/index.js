@@ -9,6 +9,7 @@ let listUsers = []
 let TicketNumber = 0
 let listTickets = []
 let indeks = 0
+let listComments = []
 
 router.use(session({
     //secret is a key which i encrypt all the information for us
@@ -57,11 +58,29 @@ router.get('/', checkAuthenticated, async (req, res) => {
 })
 
 router.get('/comments', checkAuthenticated, async (req, res) => {
+    listComments = await Comment.find({})
+    listTickets = await Ticket.find({})
+ 
+    console.log(listTickets[indeks])
+    console.log(listTickets[indeks]._id)
+    console.log(listTickets[indeks].comments)
+       let commentsTemp = listTickets[indeks].comments
+   // console.log(listComments)
+   // console.log(commentsTemp)
+    let wsad = []
+    for(let i = 0; i < commentsTemp.length; i++){
+        for(let j = 0; j < listComments.length; j++){
+            if(commentsTemp[i] == listComments[j]._id.toString()){
+                wsad.push(listComments[j])
+                break
+            }
+        }
+    }
     const nazwa = await req.user
     let data = new Date()
     try{
     res.render('comments.ejs', {
-        Tcts: listTickets[indeks],
+        Tcts: wsad,
         TDate: data,
         Author: nazwa.userName
     })
@@ -77,18 +96,30 @@ router.post('/comments', checkAuthenticated, async (req, res) => {
         commentAuthor: nazwa.userName,
         commentComment: req.body.Comment
     })
-    console.log(newComment)
-    listTickets[indeks].comments.push(newComment)
+    await newComment.save()  
+    let komt = listTickets[indeks].comments
+    komt.push(newComment._id)
     await Ticket.updateOne({
         ticketNumber: indeks + 1
     }, {
         $set: {
-            comments: listTickets[indeks].comments
+            comments: komt
         }
     }
     )
+    listComments = await Comment.find({})
+    let commentsTemp = listTickets[indeks].comments
+    let wsad = []
+    for(let i = 0; i < commentsTemp.length; i++){
+        for(let j = 0; j < listComments.length; j++){
+            if(commentsTemp[i] == listComments[j]._id.toString()){
+                wsad.push(listComments[j])
+                break
+            }
+        }
+    }
     res.render('comments.ejs', {
-        Tcts: listTickets[indeks],
+        Tcts: wsad,
         TDate: new Date(),
         Author: nazwa.userName
     })
@@ -158,7 +189,7 @@ router.post('/new', checkAuthenticated, async(req, res) => {
            ticketPriority: req.body.Priority,
            ticketDescription: req.body.Description,
            ticketError: req.body.ErrorMSG,
-           ticketComments: []
+           comments: []
         })
         await newTicket.save()  
         listTickets = await Ticket.find({})    

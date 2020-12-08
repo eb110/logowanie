@@ -6,7 +6,34 @@
     <title>Document</title>
 </head>
 <body>
-    <div>open</div>
+    <div>
+        <div>Ticket Number: <%= Tcts.ticketNumber %></div>
+        <div>Ticket Timestamp: <%= Tcts.ticketTimestamp %></div>
+        <div>Ticket Author: <%= Tcts.ticketAuthor %></div>
+        <div>Ticket Type: <%= Tcts.ticketType %></div>
+        <div>Ticket Date: <%= Tcts.ticketDate %></div>
+        <div>Assign to: <%= Tcts.ticketAssignment %></div>
+        <div>Ticket Priority: <%= Tcts.ticketPriority %></div>
+        <div>Description: <%= Tcts.ticketDescription%></div>
+        <div>Error Message: <%= Tcts.ticketMessage %></div>  
+        <div>Ticket Status: <%= Tcts.ticketStatus %></div>  
+        <br>
+        <form action="/open" method="POST">
+            <div>
+                <label for="Status">Ticket Status: </label>
+                <select name="Status" id="Status" required>
+                          <option>Open</option>      
+                          <option>Resolved</option>   
+                          <option>Closed</option>                 
+                </select>
+                <button type="submit">Update</button>
+            </div>        
+        </form>
+
+    </div>
+    <div><a href="/comments">Comments</a></div>
+    <div><a href="/">Home</a></div>
+    <div><a href="/load">Tickets</a></div>
     <form action="/logout?_method=DELETE" method="POST">
         <button type="submit">Log Out</button>
     </form>

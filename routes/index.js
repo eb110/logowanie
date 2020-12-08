@@ -8,6 +8,7 @@ const methodOverride = require('method-override')
 let listUsers = []
 let TicketNumber = 0
 let listTickets = []
+let indeks = 0
 
 router.use(session({
     //secret is a key which i encrypt all the information for us
@@ -54,10 +55,34 @@ router.get('/', checkAuthenticated, async (req, res) => {
     })
 })
 
+router.get('/comments', checkAuthenticated, async (req, res) => {
+    res.render('comments.ejs', {Tcts: listTickets[indeks]})
+})
+
 router.get('/open', checkAuthenticated, async(req, res) => {
-    let check = req.query
+    let check = req.query.a - 1
+    if(!isNaN(check))indeks = check
+    res.render('open.ejs', {Tcts: listTickets[indeks]})
+})
+
+router.post('/open', checkAuthenticated, async (req, res) => {
+    const check = await req.body.Status
     console.log(check)
-    res.render('open.ejs')
+    console.log(indeks)
+    try {
+        await Ticket.updateOne({
+            ticketNumber: indeks + 1
+        }, {
+            $set: {
+                ticketStatus: check
+            }
+        }
+        )
+        listTickets[indeks].ticketStatus = check
+    } catch {
+        console.log('dupa ' + check)
+    }
+    res.render('open.ejs', { Tcts: listTickets[indeks] })
 })
 
 router.get('/load', checkAuthenticated, async (req, res) => {

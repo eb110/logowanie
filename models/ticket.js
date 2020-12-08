@@ -42,7 +42,11 @@ const Ticket = new mongoose.Schema({
     ticketError: {
         type: String,
         required: true
-    }   
+    },
+    comments:[{
+        type:mongoose.Schema.Types.ObjectID,
+        ref: 'Comment'
+    }]   
 })
 
 /*we have to export our function as 

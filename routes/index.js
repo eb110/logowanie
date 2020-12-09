@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const passport = require('passport')
-const session = require('express-session')
+
 //const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override')
 
@@ -15,14 +15,7 @@ let listTickets = []
 let indeks = 0
 let listComments = []
 
-router.use(session({
-    //secret is a key which i encrypt all the information for us
-    //name: 'JSESSION',
-    secret: 'dupa',
-    //store: new MemoryStore(options),
-    resave: true,
-    saveUninitialized: true
-}))
+
 
 require('../models/mongoose')
 const User = require('../models/user')

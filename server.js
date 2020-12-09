@@ -1,5 +1,14 @@
 const express = require('express')
 const app = express()
+const session = require('express-session')
+app.use(session({
+    //secret is a key which i encrypt all the information for us
+    //name: 'JSESSION',
+    secret: 'dupa',
+    //store: new MemoryStore(options),
+    resave: false,
+    saveUninitialized: false
+}))
 
 const flash = require('express-flash')
 //const session = require('express-session')

@@ -20,7 +20,7 @@
   "homepage": "https://github.com/eb110/logowanie#readme",
   "dependencies": {
     "bcrypt": "^5.0.0",
-    "cookie-parser": "^1.4.5",
+    "connect-mongodb-session": "^2.4.1",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "express-flash": "0.0.2",

@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
 const passport = require('passport')
-
+const session = require('express-session')
 //const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override')
 
@@ -14,6 +14,20 @@ let TicketNumber = 0
 let listTickets = []
 let indeks = 0
 let listComments = []
+
+const MongoDBStore = require('connect-mongodb-session')(session);
+const store1 = new MongoDBStore({
+    uri : 'mongodb+srv://eb110:fhekjrs343Df@cluster0-rnf08.mongodb.net/SSD?retryWrites=true&w=majority',
+    collection: 'mySessions'
+})
+
+router.use(session({
+    secret: 'a4f8071f-c873-4447-8ee2',
+    cookie: { maxAge: 2628000000 },
+    store: store1,
+    resave: true,
+    saveUninitialized: true
+}))
 
 
 

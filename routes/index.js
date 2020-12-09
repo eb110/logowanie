@@ -60,13 +60,7 @@ router.get('/', checkAuthenticated, async (req, res) => {
 router.get('/comments', checkAuthenticated, async (req, res) => {
     listComments = await Comment.find({})
     listTickets = await Ticket.find({})
- 
-    console.log(listTickets[indeks])
-    console.log(listTickets[indeks]._id)
-    console.log(listTickets[indeks].comments)
-       let commentsTemp = listTickets[indeks].comments
-   // console.log(listComments)
-   // console.log(commentsTemp)
+    let commentsTemp = listTickets[indeks].comments
     let wsad = []
     for(let i = 0; i < commentsTemp.length; i++){
         for(let j = 0; j < listComments.length; j++){
@@ -91,6 +85,11 @@ router.get('/comments', checkAuthenticated, async (req, res) => {
 
 router.post('/comments', checkAuthenticated, async (req, res) => {
     const nazwa = await req.user
+    if(listTickets[indeks].ticketStatus === 'Closed'){
+        req.flash('error', 'Status is Closed - can\'t create a new one')
+    }
+    else{
+
     const newComment = await new Comment({
         commentTimestamp: new Date(),
         commentAuthor: nazwa.userName,
@@ -107,6 +106,7 @@ router.post('/comments', checkAuthenticated, async (req, res) => {
         }
     }
     )
+}
     listComments = await Comment.find({})
     let commentsTemp = listTickets[indeks].comments
     let wsad = []

@@ -10,13 +10,18 @@
         <div>
             Comments:
         </div>
+        <h2><% if (messages.error)  { %>
+            <%= messages.error %>
+            <% } 
+            %></h2>
         <div>      
             <% for(let i=0; i < Tcts.length; i++) { %>
                 <div><%= Tcts[i].commentTimestamp %> </div>     
                 <div><%= Tcts[i].commentAuthor %> </div>  
-                <div><%= Tcts[i].commentComment %> </div>               
+                <div><%= Tcts[i].commentComment %> </div>  
+                <br>             
            <% } %>
-           
+           <br>
         </div>
         <div>
             <div>New Comment</div>

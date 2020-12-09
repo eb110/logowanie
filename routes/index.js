@@ -3,7 +3,11 @@ const router = express.Router()
 const bcrypt = require('bcrypt')
 const passport = require('passport')
 const session = require('express-session')
+//const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override')
+
+//let MemoryStore = require('session-memory-store')(express)
+//router.use(cookieParser());
 
 let listUsers = []
 let TicketNumber = 0
@@ -13,7 +17,10 @@ let listComments = []
 
 router.use(session({
     //secret is a key which i encrypt all the information for us
+    //name: 'JSESSION',
     secret: 'dupa',
+    //store: new MemoryStore(options),
+    expires: 60,
     resave: false,
     saveUninitialized: false
 }))

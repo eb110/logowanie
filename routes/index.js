@@ -20,9 +20,8 @@ router.use(session({
     //name: 'JSESSION',
     secret: 'dupa',
     //store: new MemoryStore(options),
-    expires: 60,
-    resave: false,
-    saveUninitialized: false
+    resave: true,
+    saveUninitialized: true
 }))
 
 require('../models/mongoose')

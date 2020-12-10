@@ -19,10 +19,13 @@ const store1 = new MongoDBStore({
 
 router.use(session({
     secret: 'a4f8071f-c873-4447-8ee2',
-    cookie: { maxAge: 2628000000 },
     store: store1,
     resave: true,
-    saveUninitialized: true
+    rolling: true,
+    saveUninitialized: false,
+    cookie: {
+        expires: 10000
+    }
 }))
 
 require('../models/mongoose')
@@ -270,7 +273,7 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
         req.flash('error', 'Name is incorrect')
         res.redirect('/register')
     }
-    else if(rbs !== 'Open' || rbs !== 'Resolved' || rbs !== 'Closed'){
+    else if(rbs !== 'Developer' || rbs !== 'Tester' || rbs !== 'Client'){
         req.flash('error', 'Status is incorrect')
         res.redirect('/register')
     }

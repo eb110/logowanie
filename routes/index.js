@@ -147,7 +147,7 @@ router.get('/open', checkAuthenticated, async(req, res) => {
 
 router.post('/open', checkAuthenticated, async (req, res) => {
     const check = await req.body.Status
-    if(check !== 'Open' || check !== 'Resolved' || check !== 'Closed'){
+    if(check !== 'Open' && check !== 'Resolved' && check !== 'Closed'){
         req.flash('error', 'Data is incorrect')
         res.render('open.ejs', { Tcts: listTickets[indeks] })
     }
@@ -203,11 +203,11 @@ router.post('/new', checkAuthenticated, async(req, res) => {
     let rbD = req.body.Description
     let rbE = req.body.ErrorMSG
     let flag = 0
-    if(rbT !== 'Development' || rbT !== 'Testing' || rbT !== 'Production')flag = 1
+    if(rbT !== 'Development' && rbT !== 'Testing' && rbT !== 'Production')flag = 1
     if(rbTD instanceof Date)flag = flag
     else flag=1
     if(!listUsers.includes(rbA))flag=1
-    if(rbP !== 'Low' || rbP !== 'Medium' || rbP !== 'High')flag = 1
+    if(rbP !== 'Low' && rbP !== 'Medium' && rbP !== 'High')flag = 1
     if(rbD == null || rbD.includes('<script>') || rbD.includes('href'))flag = 1
     if(rbE == null || rbE.includes('<script>') || rbE.includes('href'))flag = 1
     if(flag == 1){
@@ -263,6 +263,7 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
     let rbn = req.body.name
     let rbs = req.body.status
     let rbe = req.body.email
+    console.log(rbs)
     let check = passwordChecker(password)
 
     if(!check){
@@ -273,7 +274,7 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
         req.flash('error', 'Name is incorrect')
         res.redirect('/register')
     }
-    else if(rbs !== 'Developer' || rbs !== 'Tester' || rbs !== 'Client'){
+    else if(rbs !== 'Developer' && rbs !== 'Tester' && rbs !== 'Client'){
         req.flash('error', 'Status is incorrect')
         res.redirect('/register')
     }

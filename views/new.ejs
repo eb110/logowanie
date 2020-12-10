@@ -6,6 +6,10 @@
     <title>New Ticket</title>
 </head>
 <body>
+    <h2><% if (messages.error)  { %>
+        <%= messages.error %>
+        <% } 
+        %></h2>
     <h1>New Ticket</h1>
     <div id="TicketNumber" name="TicketNumber">Ticket Number: <%= TNr %></div>
     <div id="TicketTimestamp" name="TicketTimestamp">Ticket Timestamp: <%= TDate %></div>

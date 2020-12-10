@@ -3,11 +3,7 @@ const router = express.Router()
 const bcrypt = require('bcrypt')
 const passport = require('passport')
 const session = require('express-session')
-//const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override')
-
-//let MemoryStore = require('session-memory-store')(express)
-//router.use(cookieParser());
 
 let listUsers = []
 let TicketNumber = 0
@@ -29,8 +25,6 @@ router.use(session({
     saveUninitialized: true
 }))
 
-
-
 require('../models/mongoose')
 const User = require('../models/user')
 const TicketNr = require('../models/ticketNr')
@@ -40,6 +34,8 @@ const Comment = require('../models/comments')
 //hook up passport configuration
 const initializePassport = require('../passport-config')
 const initializeRegistration = require('../register-config')
+const passwordChecker = require('../password-checker')
+const passwordCreator = require('../passwordCreator')
 //initialization
 initializePassport(
     passport, 
@@ -102,11 +98,13 @@ router.post('/comments', checkAuthenticated, async (req, res) => {
         req.flash('error', 'Status is Closed - can\'t create a new one')
     }
     else{
-
+        let rbCmt = req.body.Comment
+        rbCmt = rbCmt.replace(/<script>/g, 'script')
+        rbCmt = rbCmt.replace(/href/g, '')
     const newComment = await new Comment({
         commentTimestamp: new Date(),
         commentAuthor: nazwa.userName,
-        commentComment: req.body.Comment
+        commentComment: rbCmt
     })
     await newComment.save()  
     let komt = listTickets[indeks].comments
@@ -146,6 +144,11 @@ router.get('/open', checkAuthenticated, async(req, res) => {
 
 router.post('/open', checkAuthenticated, async (req, res) => {
     const check = await req.body.Status
+    if(check !== 'Open' || check !== 'Resolved' || check !== 'Closed'){
+        req.flash('error', 'Data is incorrect')
+        res.render('open.ejs', { Tcts: listTickets[indeks] })
+    }
+    else{
     try {
         await Ticket.updateOne({
             ticketNumber: indeks + 1
@@ -160,6 +163,7 @@ router.post('/open', checkAuthenticated, async (req, res) => {
         console.log('dupa ' + check)
     }
     res.render('open.ejs', { Tcts: listTickets[indeks] })
+}
 })
 
 router.get('/load', checkAuthenticated, async (req, res) => {
@@ -189,6 +193,25 @@ router.get('/new', checkAuthenticated, async (req, res) => {
 })
 
 router.post('/new', checkAuthenticated, async(req, res) => {
+    let rbT = req.body.Type
+    let rbTD = req.body.TicketDate
+    let rbA = req.body.Assignment
+    let rbP = req.body.Priority
+    let rbD = req.body.Description
+    let rbE = req.body.ErrorMSG
+    let flag = 0
+    if(rbT !== 'Development' || rbT !== 'Testing' || rbT !== 'Production')flag = 1
+    if(rbTD instanceof Date)flag = flag
+    else flag=1
+    if(!listUsers.includes(rbA))flag=1
+    if(rbP !== 'Low' || rbP !== 'Medium' || rbP !== 'High')flag = 1
+    if(rbD == null || rbD.includes('<script>') || rbD.includes('href'))flag = 1
+    if(rbE == null || rbE.includes('<script>') || rbE.includes('href'))flag = 1
+    if(flag == 1){
+        req.flash('error', 'Data is incorrect')
+        res.redirect('/new')
+    }
+    else{
     const nazwa = await req.user
     try{
         const newTicket = new Ticket({
@@ -196,12 +219,12 @@ router.post('/new', checkAuthenticated, async(req, res) => {
            ticketTimestamp: new Date(),
            ticketAuthor: nazwa.userName,
            ticketStatus: 'Open',
-           ticketType: req.body.Type,
-           ticketDate: req.body.TicketDate,
-           ticketAssignment: req.body.Assignment,
-           ticketPriority: req.body.Priority,
-           ticketDescription: req.body.Description,
-           ticketError: req.body.ErrorMSG,
+           ticketType: rbT,
+           ticketDate: rbTD,
+           ticketAssignment: rbA,
+           ticketPriority: rbP,
+           ticketDescription: rbD,
+           ticketError: rbE,
            comments: []
         })
         await newTicket.save()  
@@ -219,6 +242,7 @@ router.post('/new', checkAuthenticated, async(req, res) => {
         console.log('this is error')
         res.redirect('/new')
     }
+}
 })
 
 //checkNotAuthenticated,
@@ -232,14 +256,33 @@ router.post('/login', passport.authenticate('local', {
 }))
 
 router.post('/register', checkNotAuthenticated, async (req, res) => {
+    let password = req.body.password
+    let rbn = req.body.name
+    let rbs = req.body.status
+    let check = passwordChecker(password)
+
+    if(!check){
+        req.flash('error', 'Password is incorrect')
+        res.redirect('/register')
+    }
+    else if(rbn.includes('<script>') || rbn.includes('href')){
+        req.flash('error', 'Name is incorrect')
+        res.redirect('/register')
+    }
+    else if(rbs !== 'Open' || rbs !== 'Resolved' || rbs !== 'Closed'){
+        req.flash('error', 'Status is incorrect')
+        res.redirect('/register')
+    }
+    else{
     listUsers = await User.find({})
+  
     try{
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
         const newUser = new User({
-            userName: req.body.name,
+            userName: rbn,
             email: req.body.email,
             password: hashedPassword,
-            status: req.body.status
+            status: rbs
         })
         let initObject = initializeRegistration(listUsers, await newUser)
         if(initObject.status){
@@ -254,10 +297,12 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
         console.log('this is error')
         res.redirect('/register')
     }
+}
 })
 
 router.get('/register', checkNotAuthenticated, (req, res) => {
-    res.render('register.ejs')
+  const password = passwordCreator()
+    res.render('register.ejs', {PasswordCreated: password})
 })
 
 router.delete('/logout', (req, res) => {

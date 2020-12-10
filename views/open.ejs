@@ -6,6 +6,10 @@
     <title>Document</title>
 </head>
 <body>
+    <h2><% if (messages.error)  { %>
+        <%= messages.error %>
+        <% } 
+        %></h2>
     <div>
         <div>Ticket Number: <%= Tcts.ticketNumber %></div>
         <div>Ticket Timestamp: <%= Tcts.ticketTimestamp %></div>

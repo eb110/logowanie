@@ -259,6 +259,7 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
     let password = req.body.password
     let rbn = req.body.name
     let rbs = req.body.status
+    let rbe = req.body.email
     let check = passwordChecker(password)
 
     if(!check){
@@ -271,6 +272,10 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
     }
     else if(rbs !== 'Open' || rbs !== 'Resolved' || rbs !== 'Closed'){
         req.flash('error', 'Status is incorrect')
+        res.redirect('/register')
+    }
+    else if(rbe.includes('<script>') || rbe.includes('href')){
+        req.flash('error', 'Email is incorrect')
         res.redirect('/register')
     }
     else{

@@ -11,6 +11,8 @@ let listTickets = []
 let indeks = 0
 let listComments = []
 
+let time = Date.now()
+
 const MongoDBStore = require('connect-mongodb-session')(session);
 const store1 = new MongoDBStore({
     uri : 'mongodb+srv://eb110:fhekjrs343Df@cluster0-rnf08.mongodb.net/SSD?retryWrites=true&w=majority',
@@ -20,12 +22,9 @@ const store1 = new MongoDBStore({
 router.use(session({
     secret: 'a4f8071f-c873-4447-8ee2',
     store: store1,
-    resave: true,
+    resave: false,
     rolling: true,
     saveUninitialized: false,
-    cookie: {
-        expires: 10000
-    }
 }))
 
 require('../models/mongoose')
@@ -62,14 +61,32 @@ router.use(passport.session())
 router.use(methodOverride('_method'))
 
 router.get('/', checkAuthenticated, async (req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
     const nazwa = await req.user
+   // if(nazwa.userName == null)nazwa.userName = 'empty'
     res.render('index.ejs', {
         nameIndex: nazwa.userName,
         statusIndex: nazwa.status
     })
+}
 })
 
 router.get('/comments', checkAuthenticated, async (req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
     listComments = await Comment.find({})
     listTickets = await Ticket.find({})
     let commentsTemp = listTickets[indeks].comments
@@ -93,9 +110,18 @@ router.get('/comments', checkAuthenticated, async (req, res) => {
     }catch{
         console.log('cos kurwa nie gra')
     }
+}
 })
 
 router.post('/comments', checkAuthenticated, async (req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
     const nazwa = await req.user
     if(listTickets[indeks].ticketStatus === 'Closed'){
         req.flash('error', 'Status is Closed - can\'t create a new one')
@@ -137,15 +163,33 @@ router.post('/comments', checkAuthenticated, async (req, res) => {
         TDate: new Date(),
         Author: nazwa.userName
     })
+}
 })
 
 router.get('/open', checkAuthenticated, async(req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
     let check = req.query.a - 1
     if(!isNaN(check))indeks = check
     res.render('open.ejs', {Tcts: listTickets[indeks]})
+    }
 })
 
 router.post('/open', checkAuthenticated, async (req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
     const check = await req.body.Status
     if(check !== 'Open' && check !== 'Resolved' && check !== 'Closed'){
         req.flash('error', 'Data is incorrect')
@@ -167,21 +211,48 @@ router.post('/open', checkAuthenticated, async (req, res) => {
     }
     res.render('open.ejs', { Tcts: listTickets[indeks] })
 }
+    }
 })
 
 router.get('/load', checkAuthenticated, async (req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
     res.render('load.ejs', {Tcts: listTickets})
+    }
 })
 router.post('/load', checkAuthenticated, async (req, res) => {
     res.render('open.ejs')
 })
 
 router.get('/login', checkNotAuthenticated, async (req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
     listTickets = await Ticket.find({})
     res.render('login.ejs')
+    }
 })
 
 router.get('/new', checkAuthenticated, async (req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
     listTickets = await Ticket.find({})
     const nazwa = await req.user
     let data = new Date()
@@ -193,9 +264,18 @@ router.get('/new', checkAuthenticated, async (req, res) => {
         TUsers: listUsers,
         Author: nazwa.userName
     })
+}
 })
 
 router.post('/new', checkAuthenticated, async(req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
     let rbT = req.body.Type
     let rbTD = req.body.TicketDate
     let rbA = req.body.Assignment
@@ -246,6 +326,7 @@ router.post('/new', checkAuthenticated, async(req, res) => {
         res.redirect('/new')
     }
 }
+    }
 })
 
 //checkNotAuthenticated,
@@ -259,11 +340,18 @@ router.post('/login', passport.authenticate('local', {
 }))
 
 router.post('/register', checkNotAuthenticated, async (req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
     let password = req.body.password
     let rbn = req.body.name
     let rbs = req.body.status
     let rbe = req.body.email
-    console.log(rbs)
     let check = passwordChecker(password)
 
     if(!check){
@@ -307,11 +395,21 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
         res.redirect('/register')
     }
 }
+    }
 })
 
 router.get('/register', checkNotAuthenticated, (req, res) => {
+    let timepast = Date.now()
+    if(timepast-time>300000){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else{
+        time = Date.now()
   const password = passwordCreator()
     res.render('register.ejs', {PasswordCreated: password})
+    }
 })
 
 router.delete('/logout', (req, res) => {

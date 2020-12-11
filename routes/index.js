@@ -287,9 +287,10 @@ router.post('/new', checkAuthenticated, async(req, res) => {
     let rbE = req.body.ErrorMSG
     let flag = 0
     if(rbT !== 'Development' && rbT !== 'Testing' && rbT !== 'Production')flag = 1
-    if(rbTD instanceof Date)flag = flag
-    else flag=1
-    if(!listUsers.includes(rbA))flag=1
+    if(rbTD instanceof Date)flag = 1
+    else flag=flag
+    if(!listUsers.some(x => x === rbA))flag=flag
+    else flag = 1
     if(rbP !== 'Low' && rbP !== 'Medium' && rbP !== 'High')flag = 1
     if(rbD == null || rbD.includes('<script>') || rbD.includes('href'))flag = 1
     if(rbE == null || rbE.includes('<script>') || rbE.includes('href'))flag = 1

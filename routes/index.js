@@ -94,6 +94,7 @@ router.get('/comments', checkAuthenticated, async (req, res) => {
     for(let i = 0; i < commentsTemp.length; i++){
         for(let j = 0; j < listComments.length; j++){
             if(commentsTemp[i] == listComments[j]._id.toString()){
+                listComments[j].commentComment = [...listComments[j].commentComment].map((x,i) => i % 2 == 0 ? x : '').reduce((acc, n) => acc + n, '')
                 wsad.push(listComments[j])
                 break
             }
@@ -130,6 +131,7 @@ router.post('/comments', checkAuthenticated, async (req, res) => {
         let rbCmt = req.body.Comment
         rbCmt = rbCmt.replace(/<script>/g, 'script')
         rbCmt = rbCmt.replace(/href/g, '')
+        rbCmt = [...rbCmt].map(x => x + 'z').reduce((acc, n) => acc + n, '')
     const newComment = await new Comment({
         commentTimestamp: new Date(),
         commentAuthor: nazwa.userName,
@@ -153,6 +155,7 @@ router.post('/comments', checkAuthenticated, async (req, res) => {
     for(let i = 0; i < commentsTemp.length; i++){
         for(let j = 0; j < listComments.length; j++){
             if(commentsTemp[i] == listComments[j]._id.toString()){
+                listComments[j].commentComment = [...listComments[j].commentComment].map((x,i) => i % 2 == 0 ? x : '').reduce((acc, n) => acc + n, '')
                 wsad.push(listComments[j])
                 break
             }
@@ -358,7 +361,7 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
         req.flash('error', 'Password is incorrect')
         res.redirect('/register')
     }
-    else if(rbn.includes('<script>') || rbn.includes('href')){
+    else if(rbn.includes('<script>') || rbn.includes('href') || rbn.length < 1 || rbn.length > 20){
         req.flash('error', 'Name is incorrect')
         res.redirect('/register')
     }

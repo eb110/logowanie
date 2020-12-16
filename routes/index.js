@@ -12,6 +12,7 @@ let indeks = 0
 let listComments = []
 
 let time = Date.now()
+let timeDiff = 300000
 
 const MongoDBStore = require('connect-mongodb-session')(session);
 const store1 = new MongoDBStore({
@@ -62,7 +63,7 @@ router.use(methodOverride('_method'))
 
 router.get('/', checkAuthenticated, async (req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')
@@ -80,7 +81,7 @@ router.get('/', checkAuthenticated, async (req, res) => {
 
 router.get('/comments', checkAuthenticated, async (req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')
@@ -116,7 +117,7 @@ router.get('/comments', checkAuthenticated, async (req, res) => {
 
 router.post('/comments', checkAuthenticated, async (req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')
@@ -171,7 +172,7 @@ router.post('/comments', checkAuthenticated, async (req, res) => {
 
 router.get('/open', checkAuthenticated, async(req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')
@@ -186,7 +187,7 @@ router.get('/open', checkAuthenticated, async(req, res) => {
 
 router.post('/open', checkAuthenticated, async (req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')
@@ -219,7 +220,7 @@ router.post('/open', checkAuthenticated, async (req, res) => {
 
 router.get('/load', checkAuthenticated, async (req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')
@@ -230,12 +231,19 @@ router.get('/load', checkAuthenticated, async (req, res) => {
     }
 })
 router.post('/load', checkAuthenticated, async (req, res) => {
-    res.render('open.ejs')
+    let timepast = Date.now()
+    if(timepast-time>timeDiff){
+        time = Date.now()
+        req.logOut()
+        res.redirect('/login')
+    }
+    else
+    {res.render('open.ejs')}
 })
 
 router.get('/login', checkNotAuthenticated, async (req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')
@@ -249,7 +257,7 @@ router.get('/login', checkNotAuthenticated, async (req, res) => {
 
 router.get('/new', checkAuthenticated, async (req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')
@@ -272,7 +280,7 @@ router.get('/new', checkAuthenticated, async (req, res) => {
 
 router.post('/new', checkAuthenticated, async(req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')
@@ -345,7 +353,7 @@ router.post('/login', passport.authenticate('local', {
 
 router.post('/register', checkNotAuthenticated, async (req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')
@@ -404,7 +412,7 @@ router.post('/register', checkNotAuthenticated, async (req, res) => {
 
 router.get('/register', checkNotAuthenticated, (req, res) => {
     let timepast = Date.now()
-    if(timepast-time>300000){
+    if(timepast-time>timeDiff){
         time = Date.now()
         req.logOut()
         res.redirect('/login')

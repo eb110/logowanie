@@ -132,6 +132,8 @@ router.post('/comments', checkAuthenticated, async (req, res) => {
         let rbCmt = req.body.Comment
         rbCmt = rbCmt.replace(/<script>/g, 'script')
         rbCmt = rbCmt.replace(/href/g, '')
+        rbCmt = rbCmt.replace(/</g, '(')
+        rbCmt = rbCmt.replace(/</g, '(')
         rbCmt = [...rbCmt].map(x => x + 'z').reduce((acc, n) => acc + n, '')
     const newComment = await new Comment({
         commentTimestamp: new Date(),
@@ -287,12 +289,25 @@ router.post('/new', checkAuthenticated, async(req, res) => {
     }
     else{
         time = Date.now()
+        listUsers = await User.find({})
     let rbT = req.body.Type
     let rbTD = req.body.TicketDate
     let rbA = req.body.Assignment
     let rbP = req.body.Priority
     let rbD = req.body.Description
     let rbE = req.body.ErrorMSG
+    let testuser = 0
+    for(let i = 0; i < listUsers.length; i++){
+        if(rbA === listUsers[i].userName){
+            testuser = 1
+            break
+        }
+    }
+    if(testuser == 0){
+        req.flash('error', 'user assignment incorrect')
+        res.redirect('/new')
+    }
+    else{
     let flag = 0
     if(rbT !== 'Development' && rbT !== 'Testing' && rbT !== 'Production')flag = 1
     if(rbTD instanceof Date)flag = 1
@@ -300,6 +315,8 @@ router.post('/new', checkAuthenticated, async(req, res) => {
     if(!listUsers.some(x => x === rbA))flag=flag
     else flag = 1
     if(rbP !== 'Low' && rbP !== 'Medium' && rbP !== 'High')flag = 1
+    rbD = rbD.replace(/</g, '(')
+    rbE = rbE.replace(/</g, '(')
     if(rbD == null || rbD.includes('<script>') || rbD.includes('href'))flag = 1
     if(rbE == null || rbE.includes('<script>') || rbE.includes('href'))flag = 1
     if(flag == 1){
@@ -338,7 +355,7 @@ router.post('/new', checkAuthenticated, async(req, res) => {
         res.redirect('/new')
     }
 }
-    }
+    }}
 })
 
 //checkNotAuthenticated,
